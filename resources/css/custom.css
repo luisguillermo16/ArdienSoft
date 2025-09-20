@@ -1,0 +1,10 @@
+
+body {
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #e5e5e5;
+  background: #ffffff;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
