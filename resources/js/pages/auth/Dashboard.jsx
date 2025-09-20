@@ -1,30 +1,34 @@
-import React, { useEffect, useState } from "react";
-import axiosClient from "../services/axiosClient";
+import React, { useEffect } from "react";
 import { LogOut, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Dashboard() {
-  const [user, setUser] = useState(null);
+  const { user, logout, loading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  // cargar el usuario autenticado
+  // Redirigir al login si no está autenticado
   useEffect(() => {
-    axiosClient.get("/api/user")
-      .then((res) => setUser(res.data))
-      .catch(() => navigate("/login")); // si no está logueado, lo manda al login
-  }, [navigate]);
+    if (!loading && !isAuthenticated) {
+      navigate("/login");
+    }
+  }, [loading, isAuthenticated, navigate]);
 
   const handleLogout = async () => {
-    await axiosClient.post("/api/logout");
+    await logout();
     navigate("/login");
   };
 
-  if (!user) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-screen text-gray-600">
         Cargando...
       </div>
     );
+  }
+
+  if (!user) {
+    return null; // Se redirigirá automáticamente
   }
 
   return (

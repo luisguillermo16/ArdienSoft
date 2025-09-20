@@ -1,20 +1,30 @@
 import { useState } from "react";
 import { Mail, Lock, Eye, ArrowRight, User } from "lucide-react";
 import { useAuth } from "../../context/AuthContext"; // 👈 usamos el contexto
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const { login, user } = useAuth(); // 👈 traemos función login y user global
+  const { login, user, loading } = useAuth(); // 👈 traemos función login y user global
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    
     try {
       await login(email, password); // 👈 usamos login del contexto
-      setError(null);
+      // Redirigir al dashboard después del login exitoso
+      navigate('/dashboard');
     } catch (err) {
+      console.error('Login error:', err);
       setError("Error al iniciar sesión. Verifica tus credenciales.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -113,11 +123,12 @@ export default function Login() {
               {/* Botón */}
               <button
                 type="submit"
-                className="w-full py-3 bg-gradient-to-r from-[#FE5516] to-[#ff7a4d] text-white font-bold rounded-xl shadow-lg hover:shadow-xl relative overflow-hidden"
+                disabled={isLoading}
+                className="w-full py-3 bg-gradient-to-r from-[#FE5516] to-[#ff7a4d] text-white font-bold rounded-xl shadow-lg hover:shadow-xl relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="relative z-10 flex items-center justify-center space-x-2">
-                  <span>Iniciar Sesión</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <span>{isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}</span>
+                  {!isLoading && <ArrowRight className="w-4 h-4" />}
                 </span>
               </button>
 

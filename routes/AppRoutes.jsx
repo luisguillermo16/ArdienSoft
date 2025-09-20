@@ -7,6 +7,7 @@ import AuthLayout from "../resources/js/layout/AuthLayout";
 import Home from "../resources/js/pages/Home";
 import Servicios from "../resources/js/pages/Servicios";
 import Login from "../resources/js/pages/auth/Login";
+import Dashboard from "../resources/js/pages/auth/Dashboard";
 
 
 export default function AppRoutes() {
@@ -21,7 +22,7 @@ export default function AppRoutes() {
       {/* Layout de autenticación (sin navbar ni footer) */}
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<Login />} />
-    
+        <Route path="/dashboard" element={<Dashboard />} />
       </Route>
     </Routes>
   );

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -16,28 +17,27 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        // Intentar login
-        if (!Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+        // Intentar login con el guard web (que usa la base de datos)
+        if (!Auth::attempt($request->only('email', 'password'))) {
             throw ValidationException::withMessages([
                 'email' => ['Las credenciales no son válidas.'],
             ]);
         }
 
-        // Regenerar sesión para seguridad
-        $request->session()->regenerate();
+        $user = Auth::user();
+        $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
             'message' => 'Login correcto',
-            'user' => Auth::user()
+            'user' => $user,
+            'token' => $token
         ]);
     }
 
     public function logout(Request $request)
     {
-        Auth::guard('web')->logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        // Revocar el token actual
+        $request->user()->currentAccessToken()->delete();
 
         return response()->json(['message' => 'Sesión cerrada']);
     }
